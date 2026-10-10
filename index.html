@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>פאזל תמונה - 32 חלקים</title>
+    <title>פאזל תמונה - 12 חלקים</title>
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
@@ -61,15 +60,15 @@
             max-width: 100%;
         }
 
-        /* אזור הפאזל: 8 עמודות על 4 שורות = 32 חלקים */
+        /* אזור הפאזל: 4 עמודות על 3 שורות = 12 חלקים, מותאם פרופורציונלית לתמונות אנכיות */
         #puzzle-board {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            width: 95vw;
-            max-width: 560px;
-            aspect-ratio: 2 / 1; /* יחס המותאם לתמונה מלבנית */
-            gap: 2px;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 85vw;
+            max-width: 360px;
+            aspect-ratio: 3 / 4; /* יחס אנכי מדויק כדי למנוע מתיחה */
+            gap: 3px;
             background: #334155;
             padding: 4px;
             border-radius: 12px;
@@ -79,7 +78,7 @@
 
         .puzzle-piece {
             background-image: url('Screenshot_20261010_171342_Instagram.jpg');
-            background-size: 800% 400%; /* 8 עמודות כפול 100% ו-4 שורות כפול 100% */
+            background-size: 400% 300%; /* 4 עמודות כפול 100% ו-3 שורות כפול 100% */
             cursor: pointer;
             border-radius: 2px;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -183,7 +182,7 @@
 </head>
 <body>
 
-    <h1>פאזל 32 חלקים</h1>
+    <h1>פאזל 12 חלקים</h1>
     
     <div class="game-info">
         <div>צעדים: <span id="moves-count">0</span></div>
@@ -201,7 +200,7 @@
         <div class="preview-container">
             <button class="preview-toggle" onclick="togglePreview()">הצג/הסתר תמונה מלאה</button>
             <div id="preview-box" style="display:none; margin-top:8px;">
-                <img src="Screenshot_20261010_171342_Instagram.jpg" alt="תמונה מלאה" style="max-width:200px; border-radius:8px; border:1px solid var(--border-color);">
+                <img src="Screenshot_20261010_171342_Instagram.jpg" alt="תמונה מלאה" style="max-width:160px; border-radius:8px; border:1px solid var(--border-color);">
             </div>
         </div>
     </div>
@@ -213,8 +212,8 @@
     </div>
 
     <script>
-        const cols = 8;
-        const rows = 4;
+        const cols = 4;
+        const rows = 3;
         const totalPieces = cols * rows;
         let board = [];
         let selectedIndex = null;
@@ -251,7 +250,6 @@
         }
 
         function shufflePuzzle() {
-            // ערבוב רנדומלי שמוודא שאינו פתור מראש
             do {
                 for (let i = board.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -275,9 +273,8 @@
                     piece.classList.add('selected');
                 }
 
-                // חישוב מיקום רקע החלק בתמונה המקורית
-                const x = (pieceIndex % cols) * (100 / (cols - 1));
-                const y = Math.floor(pieceIndex / cols) * (100 / (rows - 1));
+                const x = cols > 1 ? (pieceIndex % cols) * (100 / (cols - 1)) : 0;
+                const y = rows > 1 ? Math.floor(pieceIndex / cols) * (100 / (rows - 1)) : 0;
                 piece.style.backgroundPosition = `${x}% ${y}%`;
 
                 piece.addEventListener('click', () => handlePieceClick(currentPos));
@@ -291,9 +288,8 @@
             if (selectedIndex === null) {
                 selectedIndex = pos;
             } else if (selectedIndex === pos) {
-                selectedIndex = null; // ביטוח בחירה
+                selectedIndex = null;
             } else {
-                // החלפת מיקום בין החלק הנבחר לחלק הנוכחי
                 [board[selectedIndex], board[pos]] = [board[pos], board[selectedIndex]];
                 selectedIndex = null;
                 moves++;
@@ -327,9 +323,7 @@
             box.style.display = box.style.display === 'none' ? 'block' : 'none';
         }
 
-        // הפעלת המשחק בטעינה הראשונית
         initGame();
     </script>
 </body>
 </html>
-
