@@ -37,14 +37,16 @@
 
         .game-info {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 12px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             background: var(--card-bg);
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 30px;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .game-info span {
@@ -107,7 +109,6 @@
             box-sizing: border-box;
         }
 
-        /* מראה כשחתיכה נמצאת במקום המדויק שלה */
         .puzzle-piece.correct-pos {
             box-shadow: inset 0 0 0 2px #4ade80, inset 0 0 15px rgba(74, 222, 128, 0.6);
             z-index: 5;
@@ -231,11 +232,6 @@
             min-height: 20px;
         }
 
-        .preview-container {
-            margin-top: 5px;
-            text-align: center;
-        }
-
         .preview-toggle {
             font-size: 0.85rem;
             color: #94a3b8;
@@ -245,6 +241,7 @@
             border-radius: 6px;
             cursor: pointer;
             box-shadow: none;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -254,7 +251,8 @@
     
     <div class="game-info">
         <div>צעדים: <span id="moves-count">0</span></div>
-        <div>חידות שפתרת: <span id="riddles-solved">0</span> / 3</div>
+        <div>חלקים במקום: <span id="correct-count">0</span> / 12</div>
+        <div>חידות: <span id="riddles-solved">0</span> / 3</div>
     </div>
 
     <div class="main-container">
@@ -263,245 +261,3 @@
         <div class="controls">
             <button onclick="shufflePuzzle()">ערבב מחדש</button>
         </div>
-
-        <div class="preview-container">
-            <button class="preview-toggle" onclick="togglePreview()">הצג/הסתר תמונה מלאה</button>
-            <div id="preview-box" style="display:none; margin-top:8px;">
-                <img src="Screenshot_20261010_171342_Instagram.jpg" alt="תמונה מלאה" style="max-width:160px; border-radius:8px; border:1px solid var(--border-color);">
-            </div>
-        </div>
-    </div>
-
-    <!-- פופאפ חידות -->
-    <div id="riddle-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 id="riddle-title">חידה נעולה!</h2>
-            <div id="riddle-content-box" class="riddle-text-box"></div>
-            <input type="text" id="riddle-answer" placeholder="הכנס את התשובה כאן...">
-            <button onclick="checkRiddleAnswer()">שלח תשובה</button>
-            <div id="riddle-error" class="error-msg"></div>
-        </div>
-    </div>
-
-    <!-- פופאפ סיום ניצחון -->
-    <div id="win-modal" class="modal-overlay">
-        <div class="modal-card" style="border-color: #4ade80;">
-            <h2 style="color: #4ade80; font-size: 1.8rem;">🎉 כל הכבוד!</h2>
-            <p style="text-align: center; font-size: 1.1rem; background: none; border: none; color: #f8fafc; padding: 0;">
-                פתרתם בהצלחה גשו לתחנה הבאה
-            </p>
-            <button style="margin-top: 15px;" onclick="location.reload()">שחק שוב</button>
-        </div>
-    </div>
-
-    <script>
-        const cols = 4;
-        const rows = 3;
-        const totalPieces = cols * rows;
-        let board = [];
-        let selectedIndex = null;
-        let moves = 0;
-        let lockedForRiddle = false;
-        let currentRiddleIndex = 0;
-        let wrongAttempts = 0;
-        let lockTimeout = null;
-        let triggeredMilestones = [false, false, false];
-
-        const riddles = [
-            {
-                title: "חידה מספר 1 - פענוח אקרוסטיכון",
-                htmlContent: `
-                    אי שם, ביער הקסום, התגורר לו שדון קטן<br>
-                    גבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.<br>
-                    הרחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.<br>
-                    <span class="highlight-riddle-text">זקני היער לחשו אגדה עתיקה, שרק חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</span>
-                `,
-                answer: "1357"
-            },
-            {
-                title: "חידה מספר 2",
-                htmlContent: `גשו לשגיא ותגידו 3 4 ו ותעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקוד הפתרון וקוד הפתרון הוא 22`,
-                answer: "22"
-            },
-            {
-                title: "חידה מספר 3 - אתגר לוגיקה",
-                htmlContent: `המערכת זיהתה שגיאת תקשורת בשרת המרכזי. כדי לעקוף את ההגנה, עליכם לחשב את תוצאת הפקודה הנסתרת:<br><br><strong>בסיס העבודה הוא 10, כמה זה (400 + 4)?</strong><br><br>הכניסו את קוד השגיאה המדויק:`,
-                answer: "404"
-            }
-        ];
-
-        const boardElement = document.getElementById('puzzle-board');
-        const movesElement = document.getElementById('moves-count');
-        const solvedRiddlesElement = document.getElementById('riddles-solved');
-
-        function initGame() {
-            board = Array.from({length: totalPieces}, (_, i) => i);
-            shufflePuzzle();
-        }
-
-        function shufflePuzzle() {
-            do {
-                for (let i = board.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [board[i], board[j]] = [board[j], board[i]];
-                }
-            } while (isSolved() || getCorrectPiecesCount() >= 4);
-
-            moves = 0;
-            currentRiddleIndex = 0;
-            wrongAttempts = 0;
-            lockedForRiddle = false;
-            triggeredMilestones = [false, false, false];
-            movesElement.textContent = moves;
-            solvedRiddlesElement.textContent = currentRiddleIndex;
-            selectedIndex = null;
-            boardElement.classList.remove('locked');
-            renderBoard();
-        }
-
-        function renderBoard() {
-            boardElement.innerHTML = '';
-            board.forEach((pieceIndex, currentPos) => {
-                const piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
-                
-                if (currentPos === selectedIndex) {
-                    piece.classList.add('selected');
-                }
-                
-                // הוספת מסגרת ירוקה לחתיכה שנמצאת במקום הנכון
-                if (pieceIndex === currentPos) {
-                    piece.classList.add('correct-pos');
-                }
-
-                const x = cols > 1 ? (pieceIndex % cols) * (100 / (cols - 1)) : 0;
-                const y = rows > 1 ? Math.floor(pieceIndex / cols) * (100 / (rows - 1)) : 0;
-                piece.style.backgroundPosition = `${x}% ${y}%`;
-
-                piece.addEventListener('click', () => {
-                    if (!lockedForRiddle) handlePieceClick(currentPos);
-                });
-                boardElement.appendChild(piece);
-            });
-        }
-
-        function getCorrectPiecesCount() {
-            let count = 0;
-            for (let i = 0; i < board.length; i++) {
-                if (board[i] === i) count++;
-            }
-            return count;
-        }
-
-        function handlePieceClick(pos) {
-            if (selectedIndex === null) {
-                selectedIndex = pos;
-            } else if (selectedIndex === pos) {
-                selectedIndex = null;
-            } else {
-                [board[selectedIndex], board[pos]] = [board[pos], board[selectedIndex]];
-                selectedIndex = null;
-                moves++;
-                movesElement.textContent = moves;
-
-                renderBoard();
-
-                const correctCount = getCorrectPiecesCount();
-
-                // פתיחת החידות על בסיס כמות החתיכות המדויקות
-                if (correctCount >= 4 && !triggeredMilestones[0] && currentRiddleIndex === 0) {
-                    triggeredMilestones[0] = true;
-                    triggerRiddle();
-                    return;
-                }
-                if (correctCount >= 8 && !triggeredMilestones[1] && currentRiddleIndex === 1) {
-                    triggeredMilestones[1] = true;
-                    triggerRiddle();
-                    return;
-                }
-                if (correctCount >= 12 && !triggeredMilestones[2] && currentRiddleIndex === 2) {
-                    triggeredMilestones[2] = true;
-                    triggerRiddle();
-                    return;
-                }
-
-                // בדיקת סיום (תוצג רק אחרי שהחידה השלישית נפתרה)
-                if (isSolved() && currentRiddleIndex >= riddles.length) {
-                    document.getElementById('win-modal').style.display = 'flex';
-                }
-            }
-            renderBoard();
-        }
-
-        function triggerRiddle() {
-            lockedForRiddle = true;
-            boardElement.classList.add('locked');
-            
-            const riddle = riddles[currentRiddleIndex];
-            document.getElementById('riddle-title').textContent = riddle.title;
-            document.getElementById('riddle-content-box').innerHTML = riddle.htmlContent;
-            document.getElementById('riddle-answer').value = '';
-            document.getElementById('riddle-error').textContent = '';
-            document.getElementById('riddle-modal').style.display = 'flex';
-        }
-
-        function checkRiddleAnswer() {
-            if (lockTimeout) return;
-
-            const userAns = document.getElementById('riddle-answer').value.trim();
-            const correctAnswer = riddles[currentRiddleIndex].answer;
-
-            if (userAns === correctAnswer) {
-                document.getElementById('riddle-modal').style.display = 'none';
-                boardElement.classList.remove('locked');
-                lockedForRiddle = false;
-                currentRiddleIndex++;
-                wrongAttempts = 0;
-                solvedRiddlesElement.textContent = currentRiddleIndex;
-
-                // בדיקת ניצחון מיד אחרי פתרון חידה 3 (כשהפאזל כבר שלם)
-                if (isSolved() && currentRiddleIndex >= riddles.length) {
-                    document.getElementById('win-modal').style.display = 'flex';
-                }
-            } else {
-                wrongAttempts++;
-                if (wrongAttempts >= 3) {
-                    startPenaltyTimer();
-                } else {
-                    document.getElementById('riddle-error').textContent = `תשובה שגויה! נותרו לך עוד ${3 - wrongAttempts} ניסיונות.`;
-                }
-            }
-        }
-
-        function startPenaltyTimer() {
-            let timeLeft = 12;
-            const errorDiv = document.getElementById('riddle-error');
-            const inputField = document.getElementById('riddle-answer');
-            inputField.disabled = true;
-
-            lockTimeout = setInterval(() => {
-                errorDiv.textContent = `טעית 3 פעמים! מעניין למה 12😉 נעול למשך ${timeLeft} שניות...`;
-                timeLeft--;
-                if (timeLeft < 0) {
-                    clearInterval(lockTimeout);
-                    lockTimeout = null;
-                    wrongAttempts = 0;
-                    inputField.disabled = false;
-                    errorDiv.textContent = "";
-                }
-            }, 1000);
-        }
-
-        function isSolved() {
-            return board.every((val, idx) => val === idx);
-        }
-
-        function togglePreview() {
-            const box = document.getElementById('preview-box');
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
-        }
-
-        initGame();
-    </script>
-</body>
-</html>
