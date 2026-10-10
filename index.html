@@ -101,7 +101,7 @@
             background-size: 400% 300%;
             cursor: pointer;
             border-radius: 4px;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
             user-select: none;
             -webkit-user-select: none;
             box-sizing: border-box;
@@ -193,6 +193,15 @@
             border: 1px solid var(--border-color);
             margin-bottom: 15px;
         }
+        
+        .riddle-text-box ul {
+            margin: 10px 0;
+            padding-right: 20px;
+        }
+
+        .riddle-text-box li {
+            margin-bottom: 6px;
+        }
 
         .highlight-riddle-text {
             display: block;
@@ -241,7 +250,7 @@
 </head>
 <body>
 
-    <h1>פאזל - תחנה</h1>
+    <h1>פאזל תחנה</h1>
     
     <div class="game-info">
         <div>צעדים: <span id="moves-count">0</span></div>
@@ -253,6 +262,8 @@
 
         <div class="controls">
             <button onclick="shufflePuzzle()">ערבב מחדש</button>
+            <!-- הכפתור הזה יופיע רק אחרי שיסיימו את כל החידות כדי לעזור להם לזהות חלקים הפוכים -->
+            <button id="check-btn" onclick="checkPuzzleHint()" style="display: none; background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);">בדוק אילו חלקים נכונים</button>
         </div>
 
         <div style="text-align: center;">
@@ -355,6 +366,8 @@
             
             movesElement.textContent = moves;
             solvedRiddlesElement.textContent = "0";
+            document.getElementById('check-btn').style.display = 'none';
+            document.getElementById('win-modal').style.display = 'none';
             
             selectedIndex = null;
             boardElement.classList.remove('locked');
@@ -431,7 +444,12 @@
                 return;
             }
 
-            // רק אם הפאזל סודר בשלמותו וגם כל 3 החידות נפתרו - הצג מסך ניצחון
+            // חשיפת כפתור העזרה ברגע שסיימו חידות
+            if (riddlesSolved === 3) {
+                document.getElementById('check-btn').style.display = 'inline-block';
+            }
+
+            // בדיקת סיום
             if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 3) {
                 setTimeout(() => {
                     document.getElementById('win-modal').style.display = 'flex';
@@ -500,6 +518,28 @@
             const box = document.getElementById('preview-box');
             box.style.display = box.style.display === 'none' ? 'block' : 'none';
         }
+
+        // פונקציית העזרה לחניכים (צובעת נכונים בירוק ושגויים באדום לזמן קצר)
+        function checkPuzzleHint() {
+            const pieces = document.querySelectorAll('.puzzle-piece');
+            board.forEach((pieceIndex, currentPos) => {
+                if (pieceIndex === currentPos) {
+                    pieces[currentPos].style.boxShadow = "inset 0 0 0 4px #4ade80"; // ירוק לחלק נכון
+                } else {
+                    pieces[currentPos].style.boxShadow = "inset 0 0 0 4px #f43f5e"; // אדום לחלק שגוי
+                }
+                setTimeout(() => {
+                    pieces[currentPos].style.boxShadow = "";
+                }, 2500);
+            });
+        }
+
+        // כלב השמירה (Watchdog) שרץ כל שנייה ומוודא שאם הפאזל פתור מסך הניצחון לא יתפספס בחיים!
+        setInterval(() => {
+            if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 3) {
+                document.getElementById('win-modal').style.display = 'flex';
+            }
+        }, 1000);
 
         initGame();
     </script>
