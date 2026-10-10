@@ -300,11 +300,8 @@
         let currentRiddleIndex = 0;
         let wrongAttempts = 0;
         let lockTimeout = null;
-
-        // מעקב אחר חידות שכבר שוחררו (כדי שכל קפיצת מדרגה של 4 חלקים נכונים תפעיל חידה חדשה פעם אחת בלבד)
         let triggeredMilestones = [false, false, false];
 
-        // 3 החידות בלבד
         const riddles = [
             {
                 title: "חידה מספר 1 - פענוח אקרוסטיכון",
@@ -377,7 +374,6 @@
             });
         }
 
-        // ספירת כמה חלקים נמצאים בדיוק במקום הנכון שלהם
         function getCorrectPiecesCount() {
             let count = 0;
             for (let i = 0; i < board.length; i++) {
@@ -399,20 +395,26 @@
 
                 renderBoard();
 
-                // בדיקת התקדמות לפי חתיכות שנפתרו נכון בפועל (כל 4 חתיכות במקום הנכון)
                 const correctCount = getCorrectPiecesCount();
 
+                // הפעלת חידות לפי חלקים נכונים בפועל
                 if (correctCount >= 4 && !triggeredMilestones[0] && currentRiddleIndex === 0) {
                     triggeredMilestones[0] = true;
                     triggerRiddle();
-                } else if (correctCount >= 8 && !triggeredMilestones[1] && currentRiddleIndex === 1) {
+                    return;
+                }
+                if (correctCount >= 8 && !triggeredMilestones[1] && currentRiddleIndex === 1) {
                     triggeredMilestones[1] = true;
                     triggerRiddle();
-                } else if (correctCount >= 12 && !triggeredMilestones[2] && currentRiddleIndex === 2) {
+                    return;
+                }
+                if (correctCount >= 12 && !triggeredMilestones[2] && currentRiddleIndex === 2) {
                     triggeredMilestones[2] = true;
                     triggerRiddle();
+                    return;
                 }
 
+                // בדיקת סיום מוחלט
                 if (isSolved() && currentRiddleIndex >= riddles.length) {
                     document.getElementById('win-modal').style.display = 'flex';
                 }
@@ -446,6 +448,7 @@
                 wrongAttempts = 0;
                 solvedRiddlesElement.textContent = currentRiddleIndex;
 
+                // אם הפאזל כבר שלם וזו הייתה החידה האחרונה - הצג סיום
                 if (isSolved() && currentRiddleIndex >= riddles.length) {
                     document.getElementById('win-modal').style.display = 'flex';
                 }
