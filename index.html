@@ -183,7 +183,7 @@
         }
 
         .riddle-text-box {
-            line-height: 1.6;
+            line-height: 1.8;
             font-size: 0.95rem;
             color: #cbd5e1;
             text-align: right;
@@ -203,16 +203,10 @@
             margin-bottom: 6px;
         }
 
-        .highlight-riddle-text {
-            display: block;
-            margin-top: 10px;
-            padding: 8px;
-            background: rgba(129, 140, 248, 0.1);
-            border-right: 4px solid #818cf8;
-            color: #f8fafc;
+        .first-letter {
+            color: #a855f7;
             font-weight: bold;
-            font-size: 1rem;
-            line-height: 1.5;
+            text-decoration: underline dotted #a855f7;
         }
 
         .modal-card input {
@@ -258,7 +252,6 @@
     </div>
 
     <div class="main-container">
-        <!-- הוספת dir="ltr" פותרת את בעיית הקריאה ההפוכה של הגריד -->
         <div id="puzzle-board" dir="ltr"></div>
 
         <div class="controls">
@@ -311,19 +304,20 @@
 
         const riddles = [
             {
-                title: "חידה 1 - פענוח אקרוסטיכון",
+                title: "חידה 1",
                 htmlContent: `
-                    אי שם, ביער הקסום, התגורר לו שדון קטן<br>
-                    גבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.<br>
-                    הרחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.<br>
-                    <span class="highlight-riddle-text">זקני היער לחשו אגדה עתיקה, שרק חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</span>
+                    <span class="first-letter">א</span>י שם, ביער הקסום, התגורר לו שדון קטן<br>
+                    <span class="first-letter">ג</span>בוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.<br>
+                    <span class="first-letter">ה</span>רחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.<br>
+                    <span class="first-letter">ז</span>קני היער לחשו אגדה עתיקה<br>
+                    שרק <b>חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</b>
                 `,
                 answer: "1357"
             },
             {
                 title: "משימה 2",
-                htmlContent: `גשו לשגיא ותגידו 3 4 ו ותעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקבלת קוד הפתרון.`,
-                answer: "22"
+                htmlContent: `גשו לשגיא ובו זמנית תעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקבלת קוד הפתרון.`,
+                answer: "67"
             },
             {
                 title: "חידה 3 - אתגר לוגיקה",
@@ -335,7 +329,7 @@
                         <li>לא נועה קירל! אנה __</li>
                         <li>רעל שיש ממנו כמות מזערית בתפוחים אבל בלי הניד</li>
                     </ul>
-                    <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl;">ואל תשכחו ששגיא נגמר בא' אבל הוא מאמין ב ה'</p>
+                    <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl;">ואל תשכחו ששגיא נגמר א' אבל הוא מאמין ב ה'</p>
                 `,
                 answer: "טרנזקציה"
             }
@@ -425,31 +419,26 @@
         }
 
         function checkGameState() {
-            // חידה 1 אחרי 2 הזזות
             if (moves >= 2 && riddlesSolved === 0) {
                 activeRiddleIndex = 0;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
-            // משימה 2 אחרי 4 הזזות
             if (moves >= 4 && riddlesSolved === 1) {
                 activeRiddleIndex = 1;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
-            // חידה 3 אחרי 6 הזזות
             if (moves >= 6 && riddlesSolved === 2) {
                 activeRiddleIndex = 2;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
 
-            // חשיפת כפתור העזרה ברגע שסיימו את כל החידות
             if (riddlesSolved === 3) {
                 document.getElementById('check-btn').style.display = 'inline-block';
             }
 
-            // בדיקת סיום
             if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 3) {
                 setTimeout(() => {
                     document.getElementById('win-modal').style.display = 'flex';
