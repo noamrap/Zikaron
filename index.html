@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>פאזל תחנההההההה - המשחק</title>
+    <title>פאזל תחנה - המשחק</title>
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
@@ -76,7 +76,6 @@
             position: relative;
         }
 
-        /* שכבת נעילה בזמן שאלה */
         #puzzle-board.locked::after {
             content: '🔒 הפאזל נעול! פתור את החידה';
             position: absolute;
@@ -101,16 +100,22 @@
             background-image: url('Screenshot_20261010_171342_Instagram.jpg');
             background-size: 400% 300%;
             cursor: pointer;
-            border-radius: 2px;
+            border-radius: 4px;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
             user-select: none;
             -webkit-user-select: none;
+            box-sizing: border-box;
+        }
+
+        /* מראה כשחתיכה נמצאת במקום המדויק שלה */
+        .puzzle-piece.correct-pos {
+            box-shadow: inset 0 0 0 2px #4ade80, inset 0 0 15px rgba(74, 222, 128, 0.6);
+            z-index: 5;
         }
 
         .puzzle-piece:hover {
             transform: scale(1.03);
             z-index: 10;
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
         }
 
         .puzzle-piece.selected {
@@ -148,7 +153,6 @@
             opacity: 0.9;
         }
 
-        /* פופאפ כללי (לחידות ולסיום) */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -183,7 +187,7 @@
             font-size: 1.3rem;
         }
 
-        .modal-card p {
+        .riddle-text-box {
             line-height: 1.6;
             font-size: 0.95rem;
             color: #cbd5e1;
@@ -192,6 +196,7 @@
             padding: 14px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
+            margin-bottom: 15px;
         }
 
         .highlight-riddle-text {
@@ -209,7 +214,7 @@
         .modal-card input {
             width: 100%;
             padding: 10px;
-            margin: 15px 0 10px 0;
+            margin: 5px 0 15px 0;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             background: #0f172a;
@@ -271,7 +276,7 @@
     <div id="riddle-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 id="riddle-title">חידה נעולה!</h2>
-            <div id="riddle-content-box"></div>
+            <div id="riddle-content-box" class="riddle-text-box"></div>
             <input type="text" id="riddle-answer" placeholder="הכנס את התשובה כאן...">
             <button onclick="checkRiddleAnswer()">שלח תשובה</button>
             <div id="riddle-error" class="error-msg"></div>
@@ -282,10 +287,10 @@
     <div id="win-modal" class="modal-overlay">
         <div class="modal-card" style="border-color: #4ade80;">
             <h2 style="color: #4ade80; font-size: 1.8rem;">🎉 כל הכבוד!</h2>
-            <p style="text-align: center; font-size: 1.1rem; background: none; border: none; color: #f8fafc;">
+            <p style="text-align: center; font-size: 1.1rem; background: none; border: none; color: #f8fafc; padding: 0;">
                 פתרתם בהצלחה גשו לתחנה הבאה
             </p>
-            <button onclick="location.reload()">שחק שוב</button>
+            <button style="margin-top: 15px;" onclick="location.reload()">שחק שוב</button>
         </div>
     </div>
 
@@ -315,12 +320,12 @@
             },
             {
                 title: "חידה מספר 2",
-                htmlContent: `<p>גשו לשגיא ותגידו 3 4 ו ותעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקוד הפתרון וקוד הפתרון הוא 22</p>`,
+                htmlContent: `גשו לשגיא ותגידו 3 4 ו ותעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקוד הפתרון וקוד הפתרון הוא 22`,
                 answer: "22"
             },
             {
                 title: "חידה מספר 3 - אתגר לוגיקה",
-                htmlContent: `<p>המערכת זיהתה שגיאת תקשורת בשרת המרכזי. כדי לעקוף את ההגנה, עליכם לחשב את תוצאת הפקודה הנסתרת:<br><strong>בסיס העבודה הוא 10, כמה זה (400 + 4)?</strong><br>הכניסו את קוד השגיאה המדויק:</p>`,
+                htmlContent: `המערכת זיהתה שגיאת תקשורת בשרת המרכזי. כדי לעקוף את ההגנה, עליכם לחשב את תוצאת הפקודה הנסתרת:<br><br><strong>בסיס העבודה הוא 10, כמה זה (400 + 4)?</strong><br><br>הכניסו את קוד השגיאה המדויק:`,
                 answer: "404"
             }
         ];
@@ -359,8 +364,14 @@
             board.forEach((pieceIndex, currentPos) => {
                 const piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
+                
                 if (currentPos === selectedIndex) {
                     piece.classList.add('selected');
+                }
+                
+                // הוספת מסגרת ירוקה לחתיכה שנמצאת במקום הנכון
+                if (pieceIndex === currentPos) {
+                    piece.classList.add('correct-pos');
                 }
 
                 const x = cols > 1 ? (pieceIndex % cols) * (100 / (cols - 1)) : 0;
@@ -397,7 +408,7 @@
 
                 const correctCount = getCorrectPiecesCount();
 
-                // הפעלת חידות לפי חלקים נכונים בפועל
+                // פתיחת החידות על בסיס כמות החתיכות המדויקות
                 if (correctCount >= 4 && !triggeredMilestones[0] && currentRiddleIndex === 0) {
                     triggeredMilestones[0] = true;
                     triggerRiddle();
@@ -414,7 +425,7 @@
                     return;
                 }
 
-                // בדיקת סיום מוחלט
+                // בדיקת סיום (תוצג רק אחרי שהחידה השלישית נפתרה)
                 if (isSolved() && currentRiddleIndex >= riddles.length) {
                     document.getElementById('win-modal').style.display = 'flex';
                 }
@@ -428,7 +439,7 @@
             
             const riddle = riddles[currentRiddleIndex];
             document.getElementById('riddle-title').textContent = riddle.title;
-            document.getElementById('riddle-content-box').innerHTML = `<p>${riddle.htmlContent}</p>`;
+            document.getElementById('riddle-content-box').innerHTML = riddle.htmlContent;
             document.getElementById('riddle-answer').value = '';
             document.getElementById('riddle-error').textContent = '';
             document.getElementById('riddle-modal').style.display = 'flex';
@@ -448,7 +459,7 @@
                 wrongAttempts = 0;
                 solvedRiddlesElement.textContent = currentRiddleIndex;
 
-                // אם הפאזל כבר שלם וזו הייתה החידה האחרונה - הצג סיום
+                // בדיקת ניצחון מיד אחרי פתרון חידה 3 (כשהפאזל כבר שלם)
                 if (isSolved() && currentRiddleIndex >= riddles.length) {
                     document.getElementById('win-modal').style.display = 'flex';
                 }
