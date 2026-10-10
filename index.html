@@ -187,12 +187,24 @@
             line-height: 1.6;
             font-size: 0.95rem;
             color: #cbd5e1;
-            white-space: pre-line;
             text-align: right;
             background: #0f172a;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
+        }
+
+        /* עיצוב בולט ומודגש לשורה המיוחדת בחידה 1 */
+        .highlight-riddle-text {
+            display: block;
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(129, 140, 248, 0.1);
+            border-right: 4px solid #818cf8;
+            color: #f8fafc;
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .modal-card input {
@@ -260,7 +272,7 @@
     <div id="riddle-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 id="riddle-title">חידה נעולה!</h2>
-            <p id="riddle-text"></p>
+            <div id="riddle-content-box"></div>
             <input type="text" id="riddle-answer" placeholder="הכנס את התשובה כאן...">
             <button onclick="checkRiddleAnswer()">שלח תשובה</button>
             <div id="riddle-error" class="error-msg"></div>
@@ -290,40 +302,41 @@
         let wrongAttempts = 0;
         let lockTimeout = null;
 
-        // רשימת 6 השאלות/חידות (הראשונה מסודרת אקרוסטיכונית בדיוק לפי הבקשה)
+        // רשימת 6 השאלות/חידות
         const riddles = [
             {
                 title: "חידה מספר 1 - פענוח אקרוסטיכון",
-                text: 
-`אי שם, ביער הקסום, התגורר לו שדון קטן 
-גבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.
-הרחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.
-זקני היער לחשו אגדה עתיקה, שרק ילדים שאוהבים גיאומטריה אבל שנאו את האותיות א' ו' יכלו להבין`,
-                answer: "אגהז"
+                htmlContent: `
+                    אי שם, ביער הקסום, התגורר לו שדון קטן<br>
+                    גבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.<br>
+                    הרחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.<br>
+                    <span class="highlight-riddle-text">זקני היער לחשו אגדה עתיקה, שרק חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</span>
+                `,
+                answer: "1357"
             },
             {
                 title: "חידה מספר 2",
-                text: "כאן תופיע השאלה השנייה (עדכן בהמשך לפי הצורך). מה הסיסמה?",
+                htmlContent: `<p>כאן תופיע השאלה השנייה (עדכן בהמשך לפי הצורך). מה הסיסמה?</p>`,
                 answer: "תשובה2"
             },
             {
                 title: "חידה מספר 3",
-                text: "כאן תופיע השאלה השלישית (עדכן בהמשך לפי הצורך). מה הסיסמה?",
+                htmlContent: `<p>כאן תופיע השאלה השלישית (עדכן בהמשך לפי הצורך). מה הסיסמה?</p>`,
                 answer: "תשובה3"
             },
             {
                 title: "חידה מספר 4",
-                text: "כאן תופיע השאלה הרביעית (עדכן בהמשך לפי הצורך). מה הסיסמה?",
+                htmlContent: `<p>כאן תופיע השאלה הרביעית (עדכן בהמשך לפי הצורך). מה הסיסמה?</p>`,
                 answer: "תשובה4"
             },
             {
                 title: "חידה מספר 5",
-                text: "כאן תופיע השאלה החמישית (עדכן בהמשך לפי הצורך). מה הסיסמה?",
+                htmlContent: `<p>כאן תופיע השאלה החמישית (עדכן בהמשך לפי הצורך). מה הסיסמה?</p>`,
                 answer: "תשובה5"
             },
             {
                 title: "חידה מספר 6",
-                text: "כאן תופיע השאלה השישית והאחרונה (עדכן בהמשך לפי הצורך). מה הסיסמה?",
+                htmlContent: `<p>כאן תופיע השאלה השישית והאחרונה (עדכן בהמשך לפי הצורך). מה הסיסמה?</p>`,
                 answer: "תשובה6"
             }
         ];
@@ -407,7 +420,7 @@
             
             const riddle = riddles[currentRiddleIndex];
             document.getElementById('riddle-title').textContent = riddle.title;
-            document.getElementById('riddle-text').textContent = riddle.text;
+            document.getElementById('riddle-content-box').innerHTML = `<p>${riddle.htmlContent}</p>`;
             document.getElementById('riddle-answer').value = '';
             document.getElementById('riddle-error').textContent = '';
             document.getElementById('riddle-modal').style.display = 'flex';
@@ -437,7 +450,7 @@
                 if (wrongAttempts >= 3) {
                     startPenaltyTimer();
                 } else {
-                    document.getElementById('riddle-error').textContent = `תשובה שגויה! נותרו לך עודຫຼາຍ ניסיונות (${3 - wrongAttempts}).`;
+                    document.getElementById('riddle-error').textContent = `תשובה שגויה! נותרו לך עוד ${3 - wrongAttempts} ניסיונות.`;
                 }
             }
         }
