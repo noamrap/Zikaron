@@ -204,7 +204,7 @@
         }
 
         .riddle-text-box li {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .riddle-box-highlight {
@@ -341,7 +341,7 @@
             },
             {
                 title: "משימה 2",
-                htmlContent: `גשו למפקד שגיא ובו זמנית כולכם תעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקבלת קוד הפתרון.`,
+                htmlContent: `גשו לשגיא ובו זמנית תעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקבלת קוד הפתרון.`,
                 answer: "67"
             },
             {
@@ -351,8 +351,8 @@
                     <ul style="padding-right: 20px; text-align: right; direction: rtl;">
                         <li>9 זה מספר יפה אבל אני אוהב גיאומטריה</li>
                         <li>לרוץ אבל באנגלית</li>
-                        <li id="third-list-item">
-                            <div id="access-container" style="display:inline-block; width:100%;">
+                        <li>
+                            <div id="access-container" style="display:inline-block;">
                                 <button type="button" id="ask-key-btn" onclick="toggleAccessInput()" style="background: #334155; font-size: 0.85rem; padding: 4px 10px; cursor: pointer;">מה האקסס קי?</button>
                                 <div id="key-input-area" style="display: none; margin-top: 6px;">
                                     <input type="text" id="access-key-input" placeholder="הכנס אקסס קי..." style="margin-bottom: 4px; padding: 5px; font-size: 0.85rem; width: 70%;">
@@ -364,7 +364,16 @@
                         </li>
                         <li>רעל שיש ממנו כמות מזערית בתפוחים אבל בלי הניד</li>
                     </ul>
-                    <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl; margin-top: 15px;">ואל תשכחו ששגיא נגמר א' אבל הוא מאמין ב ה'</p>
+                    
+                    <!-- חיבור ויזואלי ברור לרמז של הציאניד -->
+                    <div style="margin-top: 15px; padding: 10px 12px; background: rgba(129, 140, 248, 0.12); border-right: 4px solid #818cf8; border-radius: 6px; text-align: right;">
+                        <div style="font-size: 0.8rem; color: #a5b4fc; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;">
+                            <span>⬇️ רמז קשור למשפט הרעי (ציאניד) שמעל:</span>
+                        </div>
+                        <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl; margin: 0; font-size: 0.95rem;">
+                            ואל תשכחו ששגיא נגמר א' אבל הוא מאמין ב ה'
+                        </p>
+                    </div>
                 `,
                 answer: "טרנזקציה"
             }
@@ -567,7 +576,6 @@
 
         function checkPuzzleHint() {
             const pieces = document.querySelectorAll('.puzzle-piece');
-            board.draw; // placeholder
             board.forEach((pieceIndex, currentPos) => {
                 if (pieceIndex === currentPos) {
                     pieces[currentPos].style.boxShadow = "inset 0 0 0 4px #4ade80"; 
