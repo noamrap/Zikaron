@@ -180,6 +180,10 @@
             margin-top: 0;
             color: #818cf8;
             font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .riddle-text-box {
@@ -203,12 +207,6 @@
             margin-bottom: 6px;
         }
 
-        .first-letter {
-            color: #a855f7;
-            font-weight: bold;
-            text-decoration: underline dotted #a855f7;
-        }
-
         .riddle-box-highlight {
             margin-top: 12px;
             padding: 12px 14px;
@@ -218,6 +216,22 @@
             color: #f8fafc;
             text-align: right;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .google-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            box-shadow: none;
+        }
+
+        .google-icon-btn:hover {
+            opacity: 0.8;
+            transform: scale(1.1);
         }
 
         .modal-card input {
@@ -315,13 +329,13 @@
 
         const riddles = [
             {
-                title: "חידה 1",
+                title: 'חידה 1 - פענוח אקרוסטיכון <a href="https://www.google.com" target="_blank" title="חפש בגוגל" class="google-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.95H1.14v3.15C3.16 21.31 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.25c-.25-.72-.38-1.49-.38-2.25s.13-1.53.38-2.25V6.6H1.14C.41 8.08 0 9.75 0 12s.41 3.92 1.14 5.4l4.14-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.16 2.69 1.14 6.6l4.14 3.15c.95-2.84 3.6-4.95 6.72-4.95z"/></svg></a>',
                 htmlContent: `
-                    <span class="first-letter">א</span>י שם, ביער הקסום, התגורר לו שדון קטן<br>
-                    <span class="first-letter">ג</span>בוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.<br>
-                    <span class="first-letter">ה</span>רחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.<br>
-                    <span class="first-letter">ז</span>קני היער לחשו אגדה עתיקה<br>
-                    <div class="riddle-box-highlight">שרק <b>חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</b></div>
+                    אי שם, ביער הקסום, התגורר לו שדון קטן<br>
+                    גבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.<br>
+                    הרחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.<br>
+                    זקני היער לחשו אגדה עתיקה<br>
+                    <div class="riddle-box-highlight"><b>שרק חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</b></div>
                 `,
                 answer: "1357"
             },
@@ -337,19 +351,20 @@
                     <ul style="padding-right: 20px; text-align: right; direction: rtl;">
                         <li>9 זה מספר יפה אבל אני אוהב גיאומטריה</li>
                         <li>לרוץ אבל באנגלית</li>
-                        <li id="secret-clue" style="display: none; color: #818cf8; font-weight: bold;">לא נועה קירל! אנה __</li>
+                        <li id="third-list-item">
+                            <div id="access-container" style="display:inline-block; width:100%;">
+                                <button type="button" id="ask-key-btn" onclick="toggleAccessInput()" style="background: #334155; font-size: 0.85rem; padding: 4px 10px; cursor: pointer;">מה האקסס קי?</button>
+                                <div id="key-input-area" style="display: none; margin-top: 6px;">
+                                    <input type="text" id="access-key-input" placeholder="הכנס אקסס קי..." style="margin-bottom: 4px; padding: 5px; font-size: 0.85rem; width: 70%;">
+                                    <button type="button" onclick="checkAccessKey()" style="background: #6366f1; font-size: 0.8rem; padding: 5px 10px; cursor: pointer;">אישור</button>
+                                    <div id="key-error" style="color: #f43f5e; font-size: 0.75rem; margin-top: 2px;"></div>
+                                </div>
+                            </div>
+                            <span id="secret-clue" style="display: none; color: #818cf8; font-weight: bold;">לא נועה קירל! אנה __</span>
+                        </li>
                         <li>רעל שיש ממנו כמות מזערית בתפוחים אבל בלי הניד</li>
                     </ul>
-                    <div id="access-container" style="margin: 12px 0; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; border: 1px dashed var(--border-color); text-align: center;">
-                        <button type="button" id="ask-key-btn" onclick="toggleAccessInput()" style="background: #334155; font-size: 0.85rem; padding: 6px 12px; cursor: pointer;">מה האקסס קי?</button>
-                        <div id="key-input-area" style="display: none; margin-top: 8px;">
-                            <input type="text" id="access-key-input" placeholder="הכנס אקסס קי..." style="margin-bottom: 5px; padding: 6px; font-size: 0.9rem; width: 80%;">
-                            <br>
-                            <button type="button" onclick="checkAccessKey()" style="background: #6366f1; font-size: 0.85rem; padding: 6px 12px; cursor: pointer;">אישור</button>
-                            <div id="key-error" style="color: #f43f5e; font-size: 0.8rem; margin-top: 4px;"></div>
-                        </div>
-                    </div>
-                    <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl;">ואל תשכחו ששגיא נגמר א' אבל הוא מאמין ב ה'</p>
+                    <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl; margin-top: 15px;">ואל תשכחו ששגיא נגמר א' אבל הוא מאמין ב ה'</p>
                 `,
                 answer: "טרנזקציה"
             }
@@ -379,7 +394,7 @@
             if (inputVal === "12345654321") {
                 const secret = document.getElementById('secret-clue');
                 const container = document.getElementById('access-container');
-                if (secret) secret.style.display = 'list-item';
+                if (secret) secret.style.display = 'inline';
                 if (container) container.style.display = 'none';
             } else {
                 if (errorDiv) errorDiv.textContent = "אקסס קי שגוי!";
@@ -493,7 +508,7 @@
             boardElement.classList.add('locked');
             
             const riddle = riddles[activeRiddleIndex];
-            document.getElementById('riddle-title').textContent = riddle.title;
+            document.getElementById('riddle-title').innerHTML = riddle.title;
             document.getElementById('riddle-content-box').innerHTML = riddle.htmlContent;
             document.getElementById('riddle-answer').value = '';
             document.getElementById('riddle-error').textContent = '';
@@ -552,6 +567,7 @@
 
         function checkPuzzleHint() {
             const pieces = document.querySelectorAll('.puzzle-piece');
+            board.draw; // placeholder
             board.forEach((pieceIndex, currentPos) => {
                 if (pieceIndex === currentPos) {
                     pieces[currentPos].style.boxShadow = "inset 0 0 0 4px #4ade80"; 
