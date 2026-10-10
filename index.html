@@ -107,7 +107,7 @@
             user-select: none;
             -webkit-user-select: none;
             box-sizing: border-box;
-            touch-action: manipulation; /* מונע זום-אין בטעות בלחיצות בנייד */
+            touch-action: manipulation;
         }
 
         .puzzle-piece.correct-pos {
@@ -252,7 +252,6 @@
     
     <div class="game-info">
         <div>צעדים: <span id="moves-count">0</span></div>
-        <div>חלקים במקום: <span id="correct-count">0</span> / 12</div>
         <div>חידות: <span id="riddles-solved">0</span> / 3</div>
     </div>
 
@@ -303,7 +302,7 @@
         
         let lockedForRiddle = false;
         let activeRiddleIndex = -1;
-        let riddlesSolved = 0; // עוקב בצורה חסינה אחרי התקדמות החידות (0, 1, 2, 3)
+        let riddlesSolved = 0; 
         let wrongAttempts = 0;
         let lockTimeout = null;
 
@@ -332,7 +331,6 @@
 
         const boardElement = document.getElementById('puzzle-board');
         const movesElement = document.getElementById('moves-count');
-        const correctCountElement = document.getElementById('correct-count');
         const solvedRiddlesElement = document.getElementById('riddles-solved');
 
         function initGame() {
@@ -355,7 +353,6 @@
             lockedForRiddle = false;
             
             movesElement.textContent = moves;
-            correctCountElement.textContent = "0";
             solvedRiddlesElement.textContent = "0";
             
             selectedIndex = null;
@@ -410,40 +407,39 @@
                 // ביצוע ההחלפה
                 [board[selectedIndex], board[pos]] = [board[pos], board[selectedIndex]];
                 selectedIndex = null;
-                moves++;
+                moves++; // כאן סופרים את ההזזות
                 movesElement.textContent = moves;
                 
                 renderBoard(); 
                 
-                // בודק את מצב המשחק לאחר כל מהלך
+                // בודק את מצב המשחק (לפי הזזות בלבד)
                 checkGameState();
             }
         }
 
-        // הפונקציה המרכזית שבודקת הכל בכל רגע נתון
+        // הפונקציה בודקת אך ורק כמה הזזות (moves) נעשו
         function checkGameState() {
-            const correctCount = getCorrectPiecesCount();
-            correctCountElement.textContent = correctCount;
-
-            // בדיקת חידות שעוד לא נפתרו
-            if (correctCount >= 4 && riddlesSolved === 0) {
+            // חידה 1 אחרי 4 הזזות
+            if (moves >= 4 && riddlesSolved === 0) {
                 activeRiddleIndex = 0;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
-            if (correctCount >= 8 && riddlesSolved === 1) {
+            // חידה 2 אחרי 8 הזזות
+            if (moves >= 8 && riddlesSolved === 1) {
                 activeRiddleIndex = 1;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
-            if (correctCount >= 12 && riddlesSolved === 2) {
+            // חידה 3 אחרי 12 הזזות
+            if (moves >= 12 && riddlesSolved === 2) {
                 activeRiddleIndex = 2;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
 
-            // בדיקת סיום (הפאזל שלם וכל 3 החידות נפתרו)
-            if (correctCount === totalPieces && riddlesSolved === 3) {
+            // הפאזל נפתר והוא סיים לענות על כל 3 החידות
+            if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 3) {
                 setTimeout(() => {
                     document.getElementById('win-modal').style.display = 'flex';
                 }, 400);
@@ -477,7 +473,7 @@
                 solvedRiddlesElement.textContent = riddlesSolved;
                 wrongAttempts = 0;
 
-                // שולח את המערכת לבדוק מיד אם מגיע למשתמש לקבל כבר את החידה הבאה או לנצח
+                // בדיקה מיידית למקרה שצריך להקפיץ עוד חידה (אם הוא עשה הרבה הזזות מראש) או הודעת ניצחון
                 setTimeout(checkGameState, 150);
             } else {
                 wrongAttempts++;
