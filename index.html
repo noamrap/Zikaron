@@ -1,293 +1,335 @@
-```html
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>פאזל תמונה אינטראקטיבי 32 חלקים</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>פאזל תמונה - 32 חלקים</title>
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --border-color: #334155;
+        }
+
         body {
-            font-family: 'Heebo', sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        .puzzle-board {
+
+        h1 {
+            margin: 10px 0;
+            font-size: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .game-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-info span {
+            font-weight: bold;
+            color: #818cf8;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 100%;
+        }
+
+        /* אזור הפאזל: 8 עמודות על 4 שורות = 32 חלקים */
+        #puzzle-board {
             display: grid;
-            grid-template-columns: repeat(8, minmax(0, 1fr));
-            grid-template-rows: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            width: 95vw;
+            max-width: 560px;
+            aspect-ratio: 2 / 1; /* יחס המותאם לתמונה מלבנית */
             gap: 2px;
-            background: #1e293b;
-            padding: 8px;
-            border-radius: 1rem;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            width: 100%;
-            max-width: 800px;
-            aspect-ratio: 2 / 1;
+            background: #334155;
+            padding: 4px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--border-color);
         }
+
         .puzzle-piece {
-            background-image: url('1791641702505.jpeg');
-            background-size: 800% 400%; /* 8 cols x 4 rows */
+            background-image: url('Screenshot_20261010_171342_Instagram.jpg');
+            background-size: 800% 400%; /* 8 עמודות כפול 100% ו-4 שורות כפול 100% */
             cursor: pointer;
-            transition: all 0.2s ease;
+            border-radius: 2px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
             user-select: none;
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            -webkit-user-select: none;
         }
+
         .puzzle-piece:hover {
-            filter: brightness(1.1);
-            transform: scale(0.98);
+            transform: scale(1.03);
             z-index: 10;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
         }
+
         .puzzle-piece.selected {
-            outline: 3px solid #ec4899;
-            outline-offset: -2px;
-            transform: scale(0.95);
+            border: 2px solid #f43f5e;
+            box-shadow: 0 0 15px #f43f5e;
             z-index: 20;
-            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+            transform: scale(0.96);
         }
-        .puzzle-piece.correct-hint::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 6px;
-            height: 6px;
-            background-color: #10b981;
-            border-radius: 50%;
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        /* מסך ניצחון */
+        #win-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #win-message h2 {
+            font-size: 2rem;
+            color: #4ade80;
+            margin: 0;
+        }
+
+        #win-message p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .preview-container {
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .preview-toggle {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            background: none;
+            border: 1px dashed var(--border-color);
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: none;
+        }
+
+        .preview-toggle:hover {
+            color: #f8fafc;
+            border-color: #818cf8;
+            background: transparent;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 md:p-6 selection:bg-pink-500 selection:text-white">
+<body>
 
-    <!-- Header -->
-    <header class="text-center mb-2">
-        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">פאזל תמונה מתקדם - 32 חלקים</h1>
-        <p class="text-slate-400 text-sm mt-1">לחצו על שתי חתיכות כדי להחליף ביניהן את המיקום עד שהתמונה תסודר במלואה!</p>
-    </header>
+    <h1>פאזל 32 חלקים</h1>
+    
+    <div class="game-info">
+        <div>צעדים: <span id="moves-count">0</span></div>
+        <div>זמן: <span id="timer">00:00</span></div>
+    </div>
 
-    <!-- Stats Bar -->
-    <div class="flex flex-wrap justify-center items-center gap-6 bg-slate-900/90 backdrop-blur px-6 py-3 rounded-2xl shadow-xl mb-4 border border-slate-800">
-        <div class="flex items-center gap-2">
-            <span class="text-slate-400 text-sm">החלפות:</span>
-            <span id="moveCount" class="font-bold text-xl text-indigo-400">0</span>
+    <div class="main-container">
+        <div id="puzzle-board"></div>
+
+        <div class="controls">
+            <button onclick="shufflePuzzle()">ערבב מחדש</button>
+            <button onclick="autoSolve()" style="background: linear-gradient(135deg, #e11d48 0%, #fb7185 100%);">פתרון אוטומטי</button>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="text-slate-400 text-sm">זמן:</span>
-            <span id="timer" class="font-bold text-xl text-pink-400">00:00</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="text-slate-400 text-sm">חתיכות במקום:</span>
-            <span id="correctCount" class="font-bold text-xl text-emerald-400">0 / 32</span>
+
+        <div class="preview-container">
+            <button class="preview-toggle" onclick="togglePreview()">הצג/הסתר תמונה מלאה</button>
+            <div id="preview-box" style="display:none; margin-top:8px;">
+                <img src="Screenshot_20261010_171342_Instagram.jpg" alt="תמונה מלאה" style="max-width:200px; border-radius:8px; border:1px solid var(--border-color);">
+            </div>
         </div>
     </div>
 
-    <!-- Main Puzzle Board Container -->
-    <main class="w-full flex flex-col items-center justify-center flex-grow my-2">
-        <div id="puzzleBoard" class="puzzle-board">
-            <!-- Dynamically generated pieces -->
-        </div>
-    </main>
-
-    <!-- Action Buttons -->
-    <footer class="flex flex-wrap justify-center gap-4 mt-4">
-        <button id="shuffleBtn" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            ערבב חלקים
-        </button>
-        <button id="previewBtn" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl border border-slate-800 shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-            הצג תמונה מקורית
-        </button>
-    </footer>
-
-    <!-- Preview Modal -->
-    <div id="previewModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 p-6 rounded-3xl max-w-lg w-full border border-slate-800 relative text-center shadow-2xl">
-            <h3 class="text-2xl font-bold mb-4 text-slate-100">תמונת המקור</h3>
-            <img src="1791641702505.jpeg" alt="Original" class="w-full rounded-xl shadow-lg mb-6 object-contain max-h-[65vh] border border-slate-800">
-            <button id="closePreview" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition">סגור וחזור למשחק</button>
-        </div>
-    </div>
-
-    <!-- Win Modal -->
-    <div id="winModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-slate-900 p-8 rounded-3xl max-w-md w-full border border-slate-800 text-center shadow-2xl">
-            <div class="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner">🏆</div>
-            <h3 class="text-3xl font-bold mb-2 text-white">כל הכבוד!</h3>
-            <p class="text-slate-300 mb-2">פתרת בהצלחה את פאזל 32 החלקים!</p>
-            <p id="winStats" class="text-indigo-400 font-semibold mb-6"></p>
-            <button id="playAgainBtn" class="px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl shadow-lg w-full transition transform hover:-translate-y-0.5">שחק שוב</button>
-        </div>
+    <div id="win-message">
+        <h2>כל הכבוד! פתרת את הפאזל! 🎉</h2>
+        <p id="win-stats"></p>
+        <button onclick="shufflePuzzle(); document.getElementById('win-message').style.display='none';">שחק שוב</button>
     </div>
 
     <script>
-        const COLS = 8;
-        const ROWS = 4;
-        const TOTAL_PIECES = COLS * ROWS; // 32
-
-        // currentOrder[i] holds the original piece index that is currently displayed at slot i
-        let currentOrder = [];
+        const cols = 8;
+        const rows = 4;
+        const totalPieces = cols * rows;
+        let board = [];
         let selectedIndex = null;
         let moves = 0;
-        let timerSeconds = 0;
         let timerInterval = null;
-        let isPlaying = false;
-        let isWon = false;
+        let seconds = 0;
+        let gameStarted = false;
 
-        const boardElement = document.getElementById('puzzleBoard');
-        const moveCountElement = document.getElementById('moveCount');
+        const boardElement = document.getElementById('puzzle-board');
+        const movesElement = document.getElementById('moves-count');
         const timerElement = document.getElementById('timer');
-        const correctCountElement = document.getElementById('correctCount');
-        const shuffleBtn = document.getElementById('shuffleBtn');
-        const previewBtn = document.getElementById('previewBtn');
-        const previewModal = document.getElementById('previewModal');
-        const closePreview = document.getElementById('closePreview');
-        const winModal = document.getElementById('winModal');
-        const playAgainBtn = document.getElementById('playAgainBtn');
-        const winStats = document.getElementById('winStats');
 
-        // Initialize ordered array 0..31
-        function initSolvedState() {
-            currentOrder = Array.from({ length: TOTAL_PIECES }, (_, i) => i);
-        }
-
-        // Render the board on DOM
-        function renderBoard() {
-            boardElement.innerHTML = '';
-            let correctPieces = 0;
-
-            currentOrder.forEach((originalIndex, slotIndex) => {
-                const pieceDiv = document.createElement('div');
-                pieceDiv.classList.add('puzzle-piece');
-
-                // Calculate background position based on original correct index
-                const col = originalIndex % COLS;
-                const row = Math.floor(originalIndex / COLS);
-                pieceDiv.style.backgroundPosition = `${(col / (COLS - 1)) * 100}% ${(row / (ROWS - 1)) * 100}%`;
-
-                // Check if piece is in correct place
-                if (originalIndex === slotIndex) {
-                    correctPieces++;
-                    pieceDiv.classList.add('correct-hint');
-                }
-
-                if (selectedIndex === slotIndex) {
-                    pieceDiv.classList.add('selected');
-                }
-
-                // Click event to swap pieces
-                pieceDiv.addEventListener('click', () => {
-                    if (isWon) return;
-                    handlePieceClick(slotIndex);
-                });
-
-                boardElement.appendChild(pieceDiv);
-            });
-
-            correctCountElement.textContent = `${correctPieces} / ${TOTAL_PIECES}`;
-        }
-
-        function handlePieceClick(slotIndex) {
-            if (!isPlaying) startTimer();
-
-            if (selectedIndex === null) {
-                // Select first piece
-                selectedIndex = slotIndex;
-                renderBoard();
-            } else if (selectedIndex === slotIndex) {
-                // Deselect if clicked again
-                selectedIndex = null;
-                renderBoard();
-            } else {
-                // Swap the two pieces
-                const temp = currentOrder[selectedIndex];
-                currentOrder[selectedIndex] = currentOrder[slotIndex];
-                currentOrder[slotIndex] = temp;
-
-                selectedIndex = null;
-                moves++;
-                moveCountElement.textContent = moves;
-
-                renderBoard();
-
-                if (checkWin()) {
-                    stopTimer();
-                    isWon = true;
-                    showWinModal();
-                }
-            }
-        }
-
-        // Shuffle ensuring it's not already solved
-        function shuffleBoard() {
-            stopTimer();
-            timerSeconds = 0;
-            moves = 0;
-            selectedIndex = null;
-            isWon = false;
-            moveCountElement.textContent = moves;
-            timerElement.textContent = "00:00";
-            isPlaying = false;
-
-            initSolvedState();
-
-            // Perform random valid swaps to shuffle
-            do {
-                for (let i = currentOrder.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [currentOrder[i], currentOrder[j]] = [currentOrder[j], currentOrder[i]];
-                }
-            } while (checkWin()); // repeat if accidentally solved
-
-            renderBoard();
-        }
-
-        function checkWin() {
-            for (let i = 0; i < TOTAL_PIECES; i++) {
-                if (currentOrder[i] !== i) return false;
-            }
-            return true;
+        function initGame() {
+            board = Array.from({length: totalPieces}, (_, i) => i);
+            shufflePuzzle();
         }
 
         function startTimer() {
-            if (isPlaying) return;
-            isPlaying = true;
+            if (timerInterval) clearInterval(timerInterval);
+            seconds = 0;
+            timerElement.textContent = "00:00";
+            gameStarted = true;
             timerInterval = setInterval(() => {
-                timerSeconds++;
-                const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-                const secs = (timerSeconds % 60).toString().padStart(2, '0');
-                timerElement.textContent = `${mins}:${secs}`;
+                seconds++;
+                let m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                let s = (seconds % 60).toString().padStart(2, '0');
+                timerElement.textContent = `${m}:${s}`;
             }, 1000);
         }
 
         function stopTimer() {
             clearInterval(timerInterval);
+            gameStarted = false;
         }
 
-        function showWinModal() {
-            const mins = Math.floor(timerSeconds / 60);
-            const secs = timerSeconds % 60;
-            winStats.textContent = `השלמת את הפאזל ב-${moves} החלפות ובזמן של ${mins > 0 ? mins + ' דקות ו-' : ''}${secs} שניות!`;
-            winModal.classList.remove('hidden');
+        function shufflePuzzle() {
+            // ערבוב רנדומלי שמוודא שאינו פתור מראש
+            do {
+                for (let i = board.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [board[i], board[j]] = [board[j], board[i]];
+                }
+            } while (isSolved());
+
+            moves = 0;
+            movesElement.textContent = moves;
+            selectedIndex = null;
+            renderBoard();
+            startTimer();
         }
 
-        // Event listeners
-        shuffleBtn.addEventListener('click', shuffleBoard);
-        previewBtn.addEventListener('click', () => previewModal.classList.remove('hidden'));
-        closePreview.addEventListener('click', () => previewModal.classList.add('hidden'));
-        playAgainBtn.addEventListener('click', () => {
-            winModal.classList.add('hidden');
-            shuffleBoard();
-        });
+        function renderBoard() {
+            boardElement.innerHTML = '';
+            board.forEach((pieceIndex, currentPos) => {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                if (currentPos === selectedIndex) {
+                    piece.classList.add('selected');
+                }
 
-        // Initialize on load
-        window.onload = () => {
-            initSolvedState();
-            shuffleBoard();
-        };
+                // חישוב מיקום רקע החלק בתמונה המקורית
+                const x = (pieceIndex % cols) * (100 / (cols - 1));
+                const y = Math.floor(pieceIndex / cols) * (100 / (rows - 1));
+                piece.style.backgroundPosition = `${x}% ${y}%`;
+
+                piece.addEventListener('click', () => handlePieceClick(currentPos));
+                boardElement.appendChild(piece);
+            });
+        }
+
+        function handlePieceClick(pos) {
+            if (!gameStarted) startTimer();
+
+            if (selectedIndex === null) {
+                selectedIndex = pos;
+            } else if (selectedIndex === pos) {
+                selectedIndex = null; // ביטוח בחירה
+            } else {
+                // החלפת מיקום בין החלק הנבחר לחלק הנוכחי
+                [board[selectedIndex], board[pos]] = [board[pos], board[selectedIndex]];
+                selectedIndex = null;
+                moves++;
+                movesElement.textContent = moves;
+
+                renderBoard();
+
+                if (isSolved()) {
+                    stopTimer();
+                    document.getElementById('win-stats').textContent = `סיימת ב-${moves} צעדים ובזמן של ${timerElement.textContent}!`;
+                    document.getElementById('win-message').style.display = 'flex';
+                }
+            }
+            renderBoard();
+        }
+
+        function isSolved() {
+            return board.every((val, idx) => val === idx);
+        }
+
+        function autoSolve() {
+            stopTimer();
+            board = Array.from({length: totalPieces}, (_, i) => i);
+            renderBoard();
+            document.getElementById('win-stats').textContent = `הפאזל נפתר אוטומטית!`;
+            document.getElementById('win-message').style.display = 'flex';
+        }
+
+        function togglePreview() {
+            const box = document.getElementById('preview-box');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // הפעלת המשחק בטעינה הראשונית
+        initGame();
     </script>
 </body>
 </html>
-```
+
