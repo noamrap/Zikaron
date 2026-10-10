@@ -337,9 +337,18 @@
                     <ul style="padding-right: 20px; text-align: right; direction: rtl;">
                         <li>9 זה מספר יפה אבל אני אוהב גיאומטריה</li>
                         <li>לרוץ אבל באנגלית</li>
-                        <li>לא נועה קירל! אנה __</li>
+                        <li id="secret-clue" style="display: none; color: #818cf8; font-weight: bold;">לא נועה קירל! אנה __</li>
                         <li>רעל שיש ממנו כמות מזערית בתפוחים אבל בלי הניד</li>
                     </ul>
+                    <div id="access-container" style="margin: 12px 0; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; border: 1px dashed var(--border-color); text-align: center;">
+                        <button type="button" id="ask-key-btn" onclick="toggleAccessInput()" style="background: #334155; font-size: 0.85rem; padding: 6px 12px; cursor: pointer;">מה האקסס קי?</button>
+                        <div id="key-input-area" style="display: none; margin-top: 8px;">
+                            <input type="text" id="access-key-input" placeholder="הכנס אקסס קי..." style="margin-bottom: 5px; padding: 6px; font-size: 0.9rem; width: 80%;">
+                            <br>
+                            <button type="button" onclick="checkAccessKey()" style="background: #6366f1; font-size: 0.85rem; padding: 6px 12px; cursor: pointer;">אישור</button>
+                            <div id="key-error" style="color: #f43f5e; font-size: 0.8rem; margin-top: 4px;"></div>
+                        </div>
+                    </div>
                     <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl;">ואל תשכחו ששגיא נגמר א' אבל הוא מאמין ב ה'</p>
                 `,
                 answer: "טרנזקציה"
@@ -353,6 +362,28 @@
         function initGame() {
             board = Array.from({length: totalPieces}, (_, i) => i);
             shufflePuzzle();
+        }
+
+        function toggleAccessInput() {
+            const area = document.getElementById('key-input-area');
+            const btn = document.getElementById('ask-key-btn');
+            if (area) {
+                area.style.display = 'block';
+                if (btn) btn.style.display = 'none';
+            }
+        }
+
+        function checkAccessKey() {
+            const inputVal = document.getElementById('access-key-input').value.trim();
+            const errorDiv = document.getElementById('key-error');
+            if (inputVal === "12345654321") {
+                const secret = document.getElementById('secret-clue');
+                const container = document.getElementById('access-container');
+                if (secret) secret.style.display = 'list-item';
+                if (container) container.style.display = 'none';
+            } else {
+                if (errorDiv) errorDiv.textContent = "אקסס קי שגוי!";
+            }
         }
 
         function shufflePuzzle() {
