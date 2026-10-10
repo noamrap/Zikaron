@@ -290,12 +290,16 @@
         let wrongAttempts = 0;
         let lockTimeout = null;
 
-        // רשימת 6 השאלות/חידות (הראשונה מסודרת כאקרוסטיכון של אגהז לפי בקשתך)
+        // רשימת 6 השאלות/חידות (הראשונה מסודרת אקרוסטיכונית בדיוק לפי הבקשה)
         const riddles = [
             {
                 title: "חידה מספר 1 - פענוח אקרוסטיכון",
-                text: "אלוהים אדירים, היער קסום ושקט...\nגבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.\nהד רחוק נשמע מעבר לנחל הכסף, שבו נצנץ מפתח מוזהב.\nזה הזמן לגלות את הסיסמה (האקרוסטיכון של א-ג-ה-ז):",
-                answer: "אגהז" // או הסיסמה הנדרשת לפי האקרוסטיכון המסודר למטה
+                text: 
+`אי שם, ביער הקסום, התגורר לו שדון קטן 
+גבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.
+הרחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.
+זקני היער לחשו אגדה עתיקה, שרק ילדים שאוהבים גיאומטריה אבל שנאו את האותיות א' ו' יכלו להבין`,
+                answer: "אגהז"
             },
             {
                 title: "חידה מספר 2",
@@ -323,21 +327,6 @@
                 answer: "תשובה6"
             }
         ];
-
-        /* סידור הטקסט של החידה הראשונה לאקרוסטיכון מדויק של א-ג-ה-ז:
-           א - ...
-           ג - ...
-           ה - ...
-           ז - ...
-        */
-        riddles[0].text = 
-`אופק רחוק נצץ מעבר לנחל הכסף והארות ריצדו.
-גבוהי העצים הסתירו טירה עתיקה וקסומה ביער.
-החשיכה ירדה לאט בעוד הפיות רקדו לאור הירח.
-זקני היער לחשו אגדה עתיקה על מפתח מוזהב.
-
-מהי מילת הקוד הנסתרת (לפי ראשי התיבות א-ג-ה-ז)?`;
-        riddles[0].answer = "אגהז";
 
         const boardElement = document.getElementById('puzzle-board');
         const movesElement = document.getElementById('moves-count');
@@ -439,7 +428,7 @@
                 wrongAttempts = 0;
                 solvedRiddlesElement.textContent = currentRiddleIndex;
 
-                if (isSolved()) {
+                if (isSolved() && currentRiddleIndex >= riddles.length) {
                     document.getElementById('win-modal').style.display = 'flex';
                 }
             } else {
@@ -448,7 +437,7 @@
                 if (wrongAttempts >= 3) {
                     startPenaltyTimer();
                 } else {
-                    document.getElementById('riddle-error').textContent = `תשובה שגגיעה! נותרו לך עוד ${3 - wrongAttempts} ניסיונות.`;
+                    document.getElementById('riddle-error').textContent = `תשובה שגויה! נותרו לך עודຫຼາຍ ניסיונות (${3 - wrongAttempts}).`;
                 }
             }
         }
