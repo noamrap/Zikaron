@@ -180,14 +180,10 @@
             margin-top: 0;
             color: #818cf8;
             font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
         .riddle-text-box {
-            line-height: 1.8;
+            line-height: 1.6;
             font-size: 0.95rem;
             color: #cbd5e1;
             text-align: right;
@@ -204,34 +200,19 @@
         }
 
         .riddle-text-box li {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
-        .riddle-box-highlight {
-            margin-top: 12px;
-            padding: 12px 14px;
-            background: rgba(99, 102, 241, 0.15);
-            border: 2px solid #818cf8;
-            border-radius: 8px;
+        .highlight-riddle-text {
+            display: block;
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(129, 140, 248, 0.1);
+            border-right: 4px solid #818cf8;
             color: #f8fafc;
-            text-align: right;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        .google-icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            vertical-align: middle;
-            box-shadow: none;
-        }
-
-        .google-icon-btn:hover {
-            opacity: 0.8;
-            transform: scale(1.1);
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .modal-card input {
@@ -273,10 +254,11 @@
     
     <div class="game-info">
         <div>צעדים: <span id="moves-count">0</span></div>
-        <div>חידות/משימות: <span id="riddles-solved">0</span> / 3</div>
+        <div>חידות/משימות: <span id="riddles-solved">0</span> / 4</div>
     </div>
 
     <div class="main-container">
+        <!-- הוספת dir="ltr" פותרת את בעיית הקריאה ההפוכה של הגריד -->
         <div id="puzzle-board" dir="ltr"></div>
 
         <div class="controls">
@@ -329,20 +311,19 @@
 
         const riddles = [
             {
-                title: 'חידה 1 - פענוח אקרוסטיכון <a href="https://www.google.com/search?q=%D7%9E%D7%94+%D7%96%D7%94+%D7%90%D7%A7%D7%A8%D7%95%D7%A1%D7%98%D7%99%D7%9B%D7%95%D7%9F" target="_blank" title="חפש בגוגל: מה זה אקרוסטיכון" class="google-icon-btn"><svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.95H1.14v3.15C3.16 21.31 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.25c-.25-.72-.38-1.49-.38-2.25s.13-1.53.38-2.25V6.6H1.14C.41 8.08 0 9.75 0 12s.41 3.92 1.14 5.4l4.14-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.16 2.69 1.14 6.6l4.14 3.15c.95-2.84 3.6-4.95 6.72-4.95z"/></svg></a>',
+                title: "חידה 1 - פענוח אקרוסטיכון",
                 htmlContent: `
                     אי שם, ביער הקסום, התגורר לו שדון קטן<br>
                     גבוהי העצים הסתירו טירה עתיקה, שבה חיו פיות לאור הירח.<br>
                     הרחק מעבר לנחל הכסף, נצנץ מפתח מוזהב בין הפרחים.<br>
-                    זקני היער לחשו אגדה עתיקה<br>
-                    <div class="riddle-box-highlight"><b>שרק חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</b></div>
+                    <span class="highlight-riddle-text">זקני היער לחשו אגדה עתיקה, שרק חניכים שאוהבים גיאומטריה אבל שונאים את האותיות א' ו' יכלו להבין</span>
                 `,
                 answer: "1357"
             },
             {
                 title: "משימה 2",
-                htmlContent: `גשו לשגיא ובו זמנית תעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקבלת קוד הפתרון.`,
-                answer: "67"
+                htmlContent: `גשו לשגיא ותגידו 3 4 ו ותעשו את סימן ההיכר שלו 🤨🤨<br>לאחר שביצעתם את המשימה גשו לנועם לקבלת קוד הפתרון.`,
+                answer: "22"
             },
             {
                 title: "חידה 3 - אתגר לוגיקה",
@@ -351,31 +332,25 @@
                     <ul style="padding-right: 20px; text-align: right; direction: rtl;">
                         <li>9 זה מספר יפה אבל אני אוהב גיאומטריה</li>
                         <li>לרוץ אבל באנגלית</li>
-                        <li>
-                            <div id="access-container" style="display:inline-block;">
-                                <button type="button" id="ask-key-btn" onclick="toggleAccessInput()" style="background: #334155; font-size: 0.85rem; padding: 4px 10px; cursor: pointer;">מה האקסס קי?</button>
-                                <div id="key-input-area" style="display: none; margin-top: 6px;">
-                                    <input type="text" id="access-key-input" placeholder="הכנס אקסס קי..." style="margin-bottom: 4px; padding: 5px; font-size: 0.85rem; width: 70%;">
-                                    <button type="button" onclick="checkAccessKey()" style="background: #6366f1; font-size: 0.8rem; padding: 5px 10px; cursor: pointer;">אישור</button>
-                                    <div id="key-error" style="color: #f43f5e; font-size: 0.75rem; margin-top: 2px;"></div>
-                                </div>
-                            </div>
-                            <span id="secret-clue" style="display: none; color: #818cf8; font-weight: bold;">לא נועה קירל! אנה __</span>
-                        </li>
+                        <li>לא נועה קירל! אנה __</li>
                         <li>רעל שיש ממנו כמות מזערית בתפוחים אבל בלי הניד</li>
                     </ul>
-                    
-                    <!-- חיבור ויזואלי ברור לרמז של הציאניד -->
-                    <div style="margin-top: 15px; padding: 10px 12px; background: rgba(129, 140, 248, 0.12); border-right: 4px solid #818cf8; border-radius: 6px; text-align: right;">
-                        <div style="font-size: 0.8rem; color: #a5b4fc; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;">
-                            <span>⬇️ רמז קשור למשפט הרביעי:</span>
-                        </div>
-                        <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl; margin: 0; font-size: 0.95rem;">
-                            ואל תשכחו ששגיא נגמר א' אבל הוא מאמין ב ה'
-                        </p>
-                    </div>
+                    <p style="font-weight: bold; color: #f8fafc; text-align: center; direction: rtl;">ואל תשכחו ששגיא נגמר בא' אבל הוא מאמין ב ה'</p>
                 `,
                 answer: "טרנזקציה"
+            },
+            {
+                title: "חידה 4 - משימת חיבורים",
+                htmlContent: `
+                    <p style="text-align: center;">הגיע הזמן למשימת החיבורים!</p>
+                    <div style="text-align: center; margin: 15px 0;">
+                        <a href="https://hiburim.vercel.app/c/ycl2bi" target="_blank" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                            🔗 פתח את משחק החיבורים
+                        </a>
+                    </div>
+                    <p style="text-align: center; font-size: 0.9rem;">לאחר שסיימתם את המשחק, הכניסו את קוד הסיום שקיבלתם כאן למטה:</p>
+                `,
+                answer: "הצלחנו" // <--- שנה כאן את התשובה למה שבא לך!
             }
         ];
 
@@ -386,28 +361,6 @@
         function initGame() {
             board = Array.from({length: totalPieces}, (_, i) => i);
             shufflePuzzle();
-        }
-
-        function toggleAccessInput() {
-            const area = document.getElementById('key-input-area');
-            const btn = document.getElementById('ask-key-btn');
-            if (area) {
-                area.style.display = 'block';
-                if (btn) btn.style.display = 'none';
-            }
-        }
-
-        function checkAccessKey() {
-            const inputVal = document.getElementById('access-key-input').value.trim();
-            const errorDiv = document.getElementById('key-error');
-            if (inputVal === "12345654321") {
-                const secret = document.getElementById('secret-clue');
-                const container = document.getElementById('access-container');
-                if (secret) secret.style.display = 'inline';
-                if (container) container.style.display = 'none';
-            } else {
-                if (errorDiv) errorDiv.textContent = "אקסס קי שגוי!";
-            }
         }
 
         function shufflePuzzle() {
@@ -485,27 +438,38 @@
         }
 
         function checkGameState() {
+            // חידה 1 אחרי 2 הזזות
             if (moves >= 2 && riddlesSolved === 0) {
                 activeRiddleIndex = 0;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
+            // משימה 2 אחרי 4 הזזות
             if (moves >= 4 && riddlesSolved === 1) {
                 activeRiddleIndex = 1;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
+            // חידה 3 אחרי 6 הזזות
             if (moves >= 6 && riddlesSolved === 2) {
                 activeRiddleIndex = 2;
                 setTimeout(triggerRiddle, 300);
                 return;
             }
+            // חידה 4 (חיבורים) אחרי 8 הזזות
+            if (moves >= 8 && riddlesSolved === 3) {
+                activeRiddleIndex = 3;
+                setTimeout(triggerRiddle, 300);
+                return;
+            }
 
-            if (riddlesSolved === 3) {
+            // חשיפת כפתור העזרה ברגע שסיימו את כל 4 החידות
+            if (riddlesSolved === 4) {
                 document.getElementById('check-btn').style.display = 'inline-block';
             }
 
-            if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 3) {
+            // בדיקת סיום - חובה לסיים את הפאזל וגם את כל 4 החידות
+            if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 4) {
                 setTimeout(() => {
                     document.getElementById('win-modal').style.display = 'flex';
                 }, 400);
@@ -517,7 +481,7 @@
             boardElement.classList.add('locked');
             
             const riddle = riddles[activeRiddleIndex];
-            document.getElementById('riddle-title').innerHTML = riddle.title;
+            document.getElementById('riddle-title').textContent = riddle.title;
             document.getElementById('riddle-content-box').innerHTML = riddle.htmlContent;
             document.getElementById('riddle-answer').value = '';
             document.getElementById('riddle-error').textContent = '';
@@ -588,8 +552,9 @@
             });
         }
 
+        // כלב שמירה לניצחון 
         setInterval(() => {
-            if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 3) {
+            if (getCorrectPiecesCount() === totalPieces && riddlesSolved === 4) {
                 document.getElementById('win-modal').style.display = 'flex';
             }
         }, 1000);
